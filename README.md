@@ -46,4 +46,4 @@ Open and run [`copper_test.ipynb`](copper_test.ipynb) to:
 Run the Streamlit app to interactively predict selling price and status:
 
 ```sh
-streamlit run [copper_main.py](http://_vscodecontentref_/0)
+streamlit run copper_main.py
