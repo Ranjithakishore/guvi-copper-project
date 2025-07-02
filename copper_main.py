@@ -10,6 +10,7 @@ st.write("""
 """, unsafe_allow_html=True)
 
 tab1, tab2 = st.tabs(["PREDICT SELLING PRICE", "PREDICT STATUS"]) 
+
 with tab1:
         # Define the possible values for the dropdown menus
         status_options = ['Won', 'Draft', 'To be approved', 'Lost', 'Not lost for AM', 'Wonderful', 'Revised', 'Offered', 'Offerable']
@@ -24,30 +25,27 @@ with tab1:
 
         # Define the widgets for user input
         with st.form("my_form"):
-            col1,col2,col3=st.columns([5,2,5])
+            col1,col2,col3=st.columns([5,3,5])
+
             with col1:
-                st.write(' ')
                 status = st.selectbox("Status", status_options,key=1)
                 item_type = st.selectbox("Item Type", item_type_options,key=2)
                 country = st.selectbox("Country", sorted(country_options),key=3)
                 application = st.selectbox("Application", sorted(application_options),key=4)
                 product_ref = st.selectbox("Product Reference", product,key=5)
+
             with col3:               
                 st.write( f'<h5 style="color:rgb(0, 153, 153,0.4);">NOTE: Min & Max given for reference, you can enter any value</h5>', unsafe_allow_html=True )
                 quantity_tons = st.text_input("Enter Quantity Tons (Min:611728 & Max:1722207579)")
                 thickness = st.text_input("Enter thickness (Min:0.18 & Max:400)")
                 width = st.text_input("Enter width (Min:1, Max:2990)")
-                customer = st.text_input("customer ID (Min:12458, Max:30408185)")
+                customer = st.text_input("Customer ID (Min:12458, Max:30408185)")
+
+            center_col = st.columns([3, 2, 3])
+            with center_col[1]:
+                st.write(' ')
+                st.write(' ')
                 submit_button = st.form_submit_button(label="PREDICT SELLING PRICE")
-                st.markdown("""
-                    <style>
-                    div.stButton > button:first-child {
-                        background-color: #009999;
-                        color: white;
-                        width: 100%;
-                    }
-                    </style>
-                """, unsafe_allow_html=True)
     
             flag=0 
             pattern = r"^(?:\d+|\d*\.\d+)$"
@@ -60,15 +58,15 @@ with tab1:
             
         if submit_button and flag==1:
             if len(i)==0:
-                st.write("please enter a valid number space not allowed")
+                st.write("Please enter a valid number. Space not allowed")
             else:
                 st.write("You have entered an invalid value: ",i)  
              
         if submit_button and flag==0:
-            
             import pickle
             with open(r"assets/model.pkl", 'rb') as file:
                 loaded_model = pickle.load(file)
+
             with open(r'assets/scaler.pkl', 'rb') as f:
                 scaler_loaded = pickle.load(f)
 
@@ -87,9 +85,8 @@ with tab1:
             st.write('## :green[Predicted selling price:] ', np.exp(new_pred))
             
 with tab2: 
-    
         with st.form("my_form1"):
-            col1,col2,col3=st.columns([5,1,5])
+            col1,col2,col3=st.columns([5,2,5])
             with col1:
                 cquantity_tons = st.text_input("Enter Quantity Tons (Min:611728 & Max:1722207579)")
                 cthickness = st.text_input("Enter thickness (Min:0.18 & Max:400)")
@@ -103,6 +100,11 @@ with tab2:
                 ccountry = st.selectbox("Country", sorted(country_options),key=31)
                 capplication = st.selectbox("Application", sorted(application_options),key=41)  
                 cproduct_ref = st.selectbox("Product Reference", product,key=51)           
+
+            center_col = st.columns([3, 2, 3])
+            with center_col[1]:
+                st.write(' ')
+                st.write(' ')
                 csubmit_button = st.form_submit_button(label="PREDICT STATUS")
     
             cflag=0 
@@ -116,7 +118,7 @@ with tab2:
             
         if csubmit_button and cflag==1:
             if len(k)==0:
-                st.write("please enter a valid number space not allowed")
+                st.write("Please enter a valid number. Space not allowed")
             else:
                 st.write("You have entered an invalid value: ",k)  
              
@@ -138,6 +140,7 @@ with tab2:
             new_sample = np.concatenate((new_sample[:, [0,1,2, 3, 4, 5, 6,7]], new_sample_ohe), axis=1)
             new_sample = cscaler_loaded.transform(new_sample)
             new_pred = cloaded_model.predict(new_sample)
+
             if new_pred==1:
                 st.write('## :green[The Status is Won] ')
             else:
